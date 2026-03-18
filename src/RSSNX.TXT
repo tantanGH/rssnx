@@ -1,0 +1,5 @@
+RSSNX.X - RSS Reader & Formatter for Human68k + wget + DSHELL
+
+Visit the site for more details.
+
+https://github.com/tantanGH/rssnx/

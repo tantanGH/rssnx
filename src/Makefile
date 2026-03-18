@@ -1,10 +1,10 @@
-# この makefile は、msys や cygwin などの Unix 互換環境上で利用することを想定している。
-# ビルドには xdev68k が必要。
-# https://github.com/yosshin4004/xdev68k
+#
+#  xdev68k用 Makefile
+#
 
 # 必要な環境変数が定義されていることを確認する。
 ifndef XDEV68K_DIR
-	$(error ERROR : XDEV68K_DIR is not defined.)
+	XDEV68K_DIR=/opt/xdev68k
 endif
 
 # デフォルトサフィックスを削除
@@ -22,7 +22,7 @@ HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk.r
 TARGET_FILE = RSSNX.X
 
 # Resource files
-RESOURCE_FILES = resources/INDEX.DOC resources/SETUP.DOC resources/SETUPZ.DOC resources/RSSN.CUT
+RESOURCE_FILES = RSSNX.TXT INDEX.DOC
 
 # Distribution package 
 PACKAGE_FILE = ../RSSNX010.ZIP
@@ -33,7 +33,7 @@ INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
 # コンパイルフラグ
 COMMON_FLAGS = -m68000 -msoft-float -O2 $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 \
-    -fexec-charset=cp932 -fverbose-asm -D__LOCAL_INPUT_FILE__
+    -fexec-charset=cp932 -fverbose-asm
 
 # *.c ソースファイル
 C_SRCS = utf8_cp932.c yxml.c main.c
@@ -70,10 +70,6 @@ clean :
 	rm -f $(TARGET_FILE)
 	rm -rf $(INTERMEDIATE_DIR)
 
-# 実行ファイルの生成
-#	HLK に長いパス文字を与えることは難しい。
-#	回避策としてリンク対象ファイルを $(INTERMEDIATE_DIR) 以下にコピーし、
-#	短い相対パスを用いてリンクを実行させる。
 ${INTERMEDIATE_DIR}/$(TARGET_FILE) : $(OBJS)
 	mkdir -p $(INTERMEDIATE_DIR)
 	rm -f $(HLK_LINK_LIST)

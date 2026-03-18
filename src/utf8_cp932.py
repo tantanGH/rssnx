@@ -1,5 +1,5 @@
 #
-#  utf-8 to sjis(cp932) code mapping table generation tool (output: HAS *.s format)
+#  utf-8 to sjis(cp932) code mapping table generation tool
 #
 
 import os
