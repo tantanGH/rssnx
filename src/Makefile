@@ -33,16 +33,16 @@ INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
 # コンパイルフラグ
 COMMON_FLAGS = -m68000 -msoft-float -O2 $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 \
-    -fexec-charset=cp932 -fverbose-asm
+    -fexec-charset=cp932 -fverbose-asm -D__LOCAL_INPUT_FILE__
 
 # *.c ソースファイル
-C_SRCS = utf8_cp932.c yxml.c himem.c uart.c rss.c main.c
+C_SRCS = utf8_cp932.c yxml.c main.c
 
 # *.s ソースファイル
-ASM_SRCS =
+ASM_SRCS = cp932rsc.s
 
 # *.h source files
-HEADER_SRCS = utf8_cp932.h yxml.h himem.h uart.h rss.h
+HEADER_SRCS = cp932rsc.h utf8_cp932.h yxml.h rssnx.h
 
 # リンク対象のライブラリファイル
 LIBS =\
@@ -98,7 +98,8 @@ $(INTERMEDIATE_DIR)/%.o : %.c Makefile $(HEADER_SRCS) $(HEADER_SRCS2)
 # *.s ソースのアセンブル
 $(INTERMEDIATE_DIR)/%.o : %.s Makefile
 	mkdir -p $(INTERMEDIATE_DIR)
-	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $*.s -o $(INTERMEDIATE_DIR)/$*.o
+	iconv -t cp932 $*.s > $(INTERMEDIATE_DIR)/$*.has
+	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.has -o $(INTERMEDIATE_DIR)/$*.o
 
 package:
 	zip -j ${PACKAGE_FILE} ${INTERMEDIATE_DIR}/${TARGET_FILE} ${RESOURCE_FILES} 

@@ -1,7 +1,9 @@
 #ifndef __H_UTF8_CP932__
 #define __H_UTF8_CP932__
 
-#include <stdint.h>
+#include <stddef.h>
+
+void convert_utf8_to_cp932(uint8_t* cp932_buffer, uint8_t* utf8_buffer, size_t utf8_bytes);
 
 extern int16_t utf8_to_cp932_c2_len;
 extern int16_t utf8_to_cp932_c3_len;
