@@ -1,7 +1,7 @@
 #ifndef __H_UTF8_CP932__
 #define __H_UTF8_CP932__
 
-#include <stddef.h>
+#include <stdint.h>
 
 extern int16_t utf8_to_cp932_c2_len;
 extern int16_t utf8_to_cp932_c3_len;

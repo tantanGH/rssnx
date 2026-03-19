@@ -1,8 +1,11 @@
 #
-#  xdev68k用 Makefile
+#  Makefile (for xdev68k)
 #
 
-# 必要な環境変数が定義されていることを確認する。
+# バージョン
+VERSION = 020
+
+# xdev68k インストールパス
 ifndef XDEV68K_DIR
 	XDEV68K_DIR=/opt/xdev68k
 endif
@@ -25,7 +28,7 @@ TARGET_FILE = RSSNX.X
 RESOURCE_FILES = RSSNX.TXT RSSNX.DOC
 
 # Distribution package 
-PACKAGE_FILE = ../RSSNX020.ZIP
+PACKAGE_FILE = ../RSSNX$(VERSION).ZIP
 
 # ヘッダ検索パス
 INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
@@ -53,11 +56,11 @@ LIBS =\
 	${XDEV68K_DIR}/lib/m68k_elf/m68000/libgcc.a
 
 # 中間ファイル生成用ディレクトリ
-INTERMEDIATE_DIR = _build
+INTERMEDIATE_DIR = _build/xdev68k
 
 # オブジェクトファイル
-OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
-	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.s,%.o,$(ASM_SRCS)))
+OBJS = $(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
+	   $(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.s,%.o,$(ASM_SRCS)))
 
 # HLK に入力するリンクリスト
 HLK_LINK_LIST = $(INTERMEDIATE_DIR)/_lk_list.tmp
@@ -67,7 +70,7 @@ all : ${INTERMEDIATE_DIR}/$(TARGET_FILE) ${INTERMEDIATE_DIR}/$(TARGET_FILE2)
 
 # 中間生成物の削除
 clean : 
-	rm -f $(TARGET_FILE)
+	rm -f $(TARGET_FILE) $(PACKAGE_FILE)
 	rm -rf $(INTERMEDIATE_DIR)
 
 ${INTERMEDIATE_DIR}/$(TARGET_FILE) : $(OBJS)
@@ -84,7 +87,7 @@ ${INTERMEDIATE_DIR}/$(TARGET_FILE) : $(OBJS)
 	rm -f tmp*.\$$\$$\$$
 
 # *.c ソースのコンパイル
-$(INTERMEDIATE_DIR)/%.o : %.c Makefile $(HEADER_SRCS) $(HEADER_SRCS2)
+$(INTERMEDIATE_DIR)/%.o : %.c Makefile.xdev68k $(HEADER_SRCS)
 	mkdir -p $(INTERMEDIATE_DIR)
 	$(CC) -S $(CFLAGS) -o $(INTERMEDIATE_DIR)/$*.m68k-gas.s $<
 	$(GAS2HAS) -i $(INTERMEDIATE_DIR)/$*.m68k-gas.s -o $(INTERMEDIATE_DIR)/$*.s
@@ -92,10 +95,11 @@ $(INTERMEDIATE_DIR)/%.o : %.c Makefile $(HEADER_SRCS) $(HEADER_SRCS2)
 	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.s -o $(INTERMEDIATE_DIR)/$*.o
 
 # *.s ソースのアセンブル
-$(INTERMEDIATE_DIR)/%.o : %.s Makefile
+$(INTERMEDIATE_DIR)/%.o : %.s Makefile.xdev68k
 	mkdir -p $(INTERMEDIATE_DIR)
 	iconv -t cp932 $*.s > $(INTERMEDIATE_DIR)/$*.has
 	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.has -o $(INTERMEDIATE_DIR)/$*.o
 
+# 配布用パッケージ作成
 package:
 	zip -j ${PACKAGE_FILE} ${INTERMEDIATE_DIR}/${TARGET_FILE} ${RESOURCE_FILES} 

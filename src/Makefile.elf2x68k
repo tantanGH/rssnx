@@ -1,6 +1,9 @@
 #
-#  elf2x68k用 Makefile (予定)
+#  Makefile (for elf2x68k)
 #
+
+# バージョン
+VERSION = 020
 
 # elf2x68k インストールパス
 ifndef ELF2X68K_DIR
@@ -14,15 +17,17 @@ endif
 CC = m68k-xelf-gcc
 AS = m68k-xelf-as
 
+# HAS to GAS コンバータ
+HAS2GAS = python3 has2gas.py
+
 # 実行ファイル名
 TARGET_FILE = RSSNX.X
 
 # Document file
-DOCUMENT_FILE = RSSNX.TXT INDEX.DOC
+DOCUMENT_FILE = RSSNX.TXT RSSNX.DOC
 
 # Distribution package 
-PACKAGE_FILE = ../RSSNX020.ZIP
-
+PACKAGE_FILE = ../RSSNX$(VERSION).ZIP
 
 # ヘッダ検索パス
 INCLUDE_FLAGS =	-I${ELF2X68K_DIR}/lib/gcc/m68k-elf/13.4.0/include \
@@ -38,28 +43,27 @@ CFLAGS = $(COMMON_FLAGS) -fexec-charset=cp932 -fno-builtin-execve -fno-builtin-e
 C_SRCS = utf8_cp932.c yxml.c main.c
 
 # *.s ソースファイル
-ASM_SRCS = cp932rsc.gas
+ASM_SRCS = cp932rsc.s
 
-# *.h source files
+# *.h ヘッダーファイル
 HEADER_SRCS = cp932rsc.h utf8_cp932.h yxml.h rssnx.h
 
 # リンク対象のライブラリファイル
-#LIBS = -ldos -liocs
-LIBS = -ldos
+LIBS = -ldos -liocs
 
 # 中間ファイル生成用ディレクトリ
-INTERMEDIATE_DIR = _build
+INTERMEDIATE_DIR = _build/elf2x68k
 
 # オブジェクトファイル
 OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
-	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.s,%.o,$(ASM_SRCS)))
+	    $(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.s,%.o,$(ASM_SRCS)))
 
 # デフォルトのターゲット
 all : ${INTERMEDIATE_DIR}/$(TARGET_FILE)
 
 # 中間生成物の削除
 clean : 
-	rm -f $(TARGET_FILE)
+	rm -f $(TARGET_FILE) $(PACKAGE_FILE)
 	rm -rf $(INTERMEDIATE_DIR)
 
 # 実行ファイルの生成
@@ -68,14 +72,16 @@ ${INTERMEDIATE_DIR}/$(TARGET_FILE) : $(OBJS)
 	$(CC) $(COMMON_FLAGS) -o ${INTERMEDIATE_DIR}/${TARGET_FILE} $(OBJS) $(LIBS)
 
 # *.c ソースのコンパイル
-$(INTERMEDIATE_DIR)/%.o : %.c Makefile $(HEADER_SRCS)
+$(INTERMEDIATE_DIR)/%.o : %.c Makefile.elf2x68k $(HEADER_SRCS)
 	mkdir -p $(INTERMEDIATE_DIR)
 	$(CC) $(CFLAGS) -c $*.c -o $(INTERMEDIATE_DIR)/$*.o
 
-# *.gas ソースのコンパイル
-$(INTERMEDIATE_DIR)/%.o : %.gas Makefile $(HEADER_SRCS)
+# *.s ソースのアセンブル
+$(INTERMEDIATE_DIR)/%.o : %.s Makefile.elf2x68k $(HEADER_SRCS)
 	mkdir -p $(INTERMEDIATE_DIR)
-	$(AS) -c $*.gas -o $(INTERMEDIATE_DIR)/$*.o
+	$(HAS2GAS) < $*.s > $(INTERMEDIATE_DIR)/$*.gas
+	$(AS) -c $(INTERMEDIATE_DIR)/$*.gas -o $(INTERMEDIATE_DIR)/$*.o
 
+# 配布用パッケージ作成
 package:
 	zip -j ${PACKAGE_FILE} ${INTERMEDIATE_DIR}/${TARGET_FILE} ${DOCUMENT_FILE} 
