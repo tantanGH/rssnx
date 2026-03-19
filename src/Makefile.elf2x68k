@@ -1,0 +1,81 @@
+#
+#  elf2x68k用 Makefile (予定)
+#
+
+# elf2x68k インストールパス
+ifndef ELF2X68K_DIR
+	ELF2X68K_DIR=/opt/homebrew/Cellar/elf2x68k/20251124
+endif
+
+# デフォルトサフィックスを削除
+.SUFFIXES:
+
+# 各種コマンド短縮名
+CC = m68k-xelf-gcc
+AS = m68k-xelf-as
+
+# 実行ファイル名
+TARGET_FILE = RSSNX.X
+
+# Document file
+DOCUMENT_FILE = RSSNX.TXT INDEX.DOC
+
+# Distribution package 
+PACKAGE_FILE = ../RSSNX020.ZIP
+
+
+# ヘッダ検索パス
+INCLUDE_FLAGS =	-I${ELF2X68K_DIR}/lib/gcc/m68k-elf/13.4.0/include \
+				-I${ELF2X68K_DIR}/m68k-elf/include \
+				-I${ELF2X68K_DIR}/xc-elf/include
+
+# コンパイルフラグ
+#COMMON_FLAGS = -specs=xc.sjis.specs -m68000 -O2 $(INCLUDE_FLAGS)
+COMMON_FLAGS = -specs=xc.sjis.floateml.specs -m68000 -O2 $(INCLUDE_FLAGS) -D__ELF2X68K__
+CFLAGS = $(COMMON_FLAGS) -fexec-charset=cp932 -fno-builtin-execve -fno-builtin-execv -fno-builtin-execvp
+
+# *.c ソースファイル
+C_SRCS = utf8_cp932.c yxml.c main.c
+
+# *.s ソースファイル
+ASM_SRCS = cp932rsc.gas
+
+# *.h source files
+HEADER_SRCS = cp932rsc.h utf8_cp932.h yxml.h rssnx.h
+
+# リンク対象のライブラリファイル
+#LIBS = -ldos -liocs
+LIBS = -ldos
+
+# 中間ファイル生成用ディレクトリ
+INTERMEDIATE_DIR = _build
+
+# オブジェクトファイル
+OBJS =	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.c,%.o,$(C_SRCS))) \
+	$(addprefix $(INTERMEDIATE_DIR)/,$(patsubst %.s,%.o,$(ASM_SRCS)))
+
+# デフォルトのターゲット
+all : ${INTERMEDIATE_DIR}/$(TARGET_FILE)
+
+# 中間生成物の削除
+clean : 
+	rm -f $(TARGET_FILE)
+	rm -rf $(INTERMEDIATE_DIR)
+
+# 実行ファイルの生成
+${INTERMEDIATE_DIR}/$(TARGET_FILE) : $(OBJS)
+	mkdir -p $(INTERMEDIATE_DIR)
+	$(CC) $(COMMON_FLAGS) -o ${INTERMEDIATE_DIR}/${TARGET_FILE} $(OBJS) $(LIBS)
+
+# *.c ソースのコンパイル
+$(INTERMEDIATE_DIR)/%.o : %.c Makefile $(HEADER_SRCS)
+	mkdir -p $(INTERMEDIATE_DIR)
+	$(CC) $(CFLAGS) -c $*.c -o $(INTERMEDIATE_DIR)/$*.o
+
+# *.gas ソースのコンパイル
+$(INTERMEDIATE_DIR)/%.o : %.gas Makefile $(HEADER_SRCS)
+	mkdir -p $(INTERMEDIATE_DIR)
+	$(AS) -c $*.gas -o $(INTERMEDIATE_DIR)/$*.o
+
+package:
+	zip -j ${PACKAGE_FILE} ${INTERMEDIATE_DIR}/${TARGET_FILE} ${DOCUMENT_FILE} 
