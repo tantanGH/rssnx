@@ -14,4 +14,10 @@
 #define STACK_SIZE      (4096)
 #define FREAD_BUF_SIZE  (32768)
 
+#define TAG_NONE        (0)
+#define TAG_TITLE       (1)
+#define TAG_LINK        (2)
+#define TAG_DATE        (3)
+#define TAG_SUMMARY     (4)
+
 #endif
