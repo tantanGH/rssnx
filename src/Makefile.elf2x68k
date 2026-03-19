@@ -3,7 +3,7 @@
 #
 
 # バージョン
-VERSION = 020
+VERSION = 030
 
 # elf2x68k インストールパス
 ifndef ELF2X68K_DIR
