@@ -1,7 +1,7 @@
 #ifndef __H_RSSNX__
 #define __H_RSSNX__
 
-#define VERSION "0.2.0 (2026/03/19)"
+#define VERSION "0.3.0 (2026/03/19)"
 
 #define MAX_FILENAME_LEN (250)
 

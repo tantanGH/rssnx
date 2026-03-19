@@ -6,12 +6,8 @@
 //
 //  xc headers
 //
-#ifndef __ELF2X68K__
 #include <doslib.h>
 #include <process.h>
-#else
-#include <x68k/dos.h>
-#endif
 
 //
 //  local headers
@@ -20,6 +16,15 @@
 #include "rssnx.h"
 #include "utf8_cp932.h"
 #include "yxml.h"
+
+//
+//  quick hack for elf2x68k link error
+//
+#ifdef __ELF2X68K__
+#include <reent.h>
+struct _reent _impure_data = {0};
+struct _reent *_impure_ptr = _GLOBAL_REENT;
+#endif
 
 //
 //  global buffers
@@ -35,8 +40,7 @@ static uint8_t g_cp932_buffer[BUF_SIZE * 2];
 static void convert_utf8_to_cp932(uint8_t *cp932_buffer, uint8_t *utf8_buffer,
                                   size_t utf8_bytes) {
 
-  // CAUTION: utf8_buffer may be odd address and word access will fail on 68000
-  // machines
+  // CAUTION: utf8_buffer may be odd address and word access will fail on 68000 machines
 
   int16_t utf8_ofs = 0;
   int16_t cp932_ofs = 0;
@@ -428,17 +432,16 @@ try:
   if (exec_rc != 0) {
     goto catch;
   }
-  fp = fopen(DEFAULT_DOWNLOAD_FILENAME, "rb");
-  if (fp == NULL) {
-    goto catch;
-  }
-  fseek(fp, 0, SEEK_END);
-  size_t input_content_length = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
 
   // output file handle
   fo = fopen(output_file_name, "wb");
   if (fo == NULL) {
+    goto catch;
+  }
+
+  // input file handle
+  fp = fopen(DEFAULT_DOWNLOAD_FILENAME, "rb");
+  if (fp == NULL) {
     goto catch;
   }
 
@@ -458,19 +461,11 @@ catch:
   }
 
   // remove input file
-#ifdef __ELF2X68K__
-  _dos_delete(DEFAULT_DOWNLOAD_FILENAME);
-#else
   DELETE(DEFAULT_DOWNLOAD_FILENAME);
-#endif
 
   // remove output file in error cases
   if (rc != 0) {
-#ifdef __ELF2X68K__
-    _dos_delete(output_file_name);
-#else
     DELETE(output_file_name);
-#endif
   }
 
 exit:
