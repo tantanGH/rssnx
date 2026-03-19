@@ -34,7 +34,7 @@ INCLUDE_FLAGS = -I${ELF2X68K_DIR}/lib/gcc/m68k-elf/13.4.0/include \
 				-I${ELF2X68K_DIR}/m68k-elf/include 
 
 # コンパイルフラグ
-COMMON_FLAGS = -m68000 -O2 -msoft-float $(INCLUDE_FLAGS)
+COMMON_FLAGS = -m68000 -O2 -msoft-float -specs=nano.specs $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS)
 
 # *.c ソースファイル
