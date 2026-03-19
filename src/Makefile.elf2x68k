@@ -3,7 +3,7 @@
 #
 
 # バージョン
-VERSION = 030
+VERSION = 035
 
 # elf2x68k インストールパス
 ifndef ELF2X68K_DIR
@@ -30,14 +30,12 @@ DOCUMENT_FILE = RSSNX.TXT RSSNX.DOC
 PACKAGE_FILE = ../RSSNX$(VERSION).ZIP
 
 # ヘッダ検索パス
-INCLUDE_FLAGS =	-I${ELF2X68K_DIR}/lib/gcc/m68k-elf/13.4.0/include \
-				-I${ELF2X68K_DIR}/m68k-elf/include \
-				-I${ELF2X68K_DIR}/xc-elf/include
+INCLUDE_FLAGS = -I${ELF2X68K_DIR}/lib/gcc/m68k-elf/13.4.0/include \
+				-I${ELF2X68K_DIR}/m68k-elf/include 
 
 # コンパイルフラグ
-#COMMON_FLAGS = -specs=xc.sjis.specs -m68000 -O2 $(INCLUDE_FLAGS)
-COMMON_FLAGS = -specs=xc.sjis.floateml.specs -m68000 -O2 $(INCLUDE_FLAGS) -D__ELF2X68K__
-CFLAGS = $(COMMON_FLAGS) -fexec-charset=cp932 -fno-builtin-execve -fno-builtin-execv -fno-builtin-execvp
+COMMON_FLAGS = -m68000 -O2 -msoft-float $(INCLUDE_FLAGS)
+CFLAGS = $(COMMON_FLAGS)
 
 # *.c ソースファイル
 C_SRCS = utf8_cp932.c yxml.c main.c
