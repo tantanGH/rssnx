@@ -3,7 +3,7 @@
 #
 
 # バージョン
-VERSION = 030
+VERSION = 035
 
 # xdev68k インストールパス
 ifndef XDEV68K_DIR

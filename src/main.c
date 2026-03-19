@@ -1,13 +1,12 @@
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 //
 //  xc headers
 //
 #include <doslib.h>
-#include <process.h>
 
 //
 //  local headers
@@ -16,15 +15,6 @@
 #include "rssnx.h"
 #include "utf8_cp932.h"
 #include "yxml.h"
-
-//
-//  quick hack for elf2x68k link error
-//
-#ifdef __ELF2X68K__
-#include <reent.h>
-struct _reent _impure_data = {0};
-struct _reent *_impure_ptr = _GLOBAL_REENT;
-#endif
 
 //
 //  global buffers
@@ -427,8 +417,11 @@ int32_t main(int32_t argc, uint8_t *argv[]) {
 try:
 
   // call wget
-  int32_t exec_rc = spawnlp(P_WAIT, EXEC_WGET, EXEC_WGET, rss_url, "-O",
-                            DEFAULT_DOWNLOAD_FILENAME, NULL);
+  uint8_t cmd[ MAX_CMDLINE_LEN ];
+  sprintf(cmd,"%s %s -O %s", EXEC_WGET, rss_url, DEFAULT_DOWNLOAD_FILENAME);
+  int32_t exec_rc = system(cmd);
+//  int32_t exec_rc = spawnlp(P_WAIT, EXEC_WGET, EXEC_WGET, rss_url, "-O",
+//                            DEFAULT_DOWNLOAD_FILENAME, NULL);
   if (exec_rc != 0) {
     goto catch;
   }

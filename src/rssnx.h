@@ -1,9 +1,10 @@
 #ifndef __H_RSSNX__
 #define __H_RSSNX__
 
-#define VERSION "0.3.0 (2026/03/19)"
+#define VERSION "0.3.5 (2026/03/20)"
 
 #define MAX_FILENAME_LEN (250)
+#define MAX_CMDLINE_LEN  (250)
 
 #define EXEC_WGET "WGET.X"
 
