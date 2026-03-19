@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 
 src/_build
 src/_work
