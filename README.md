@@ -17,10 +17,9 @@ A native RSS Reader for Human68k + wget + DSHELL
 
 以下での動作を確認しています。
 
-- X68030/060turbo実機 + イーサネットじょい君 + joynetd
-- X68000XVI/PhantomX実機 + イーサネットじょい君 + joynetd
-
-Nereid+inetd/hinetdでは動作未確認です。ご了承下さい。
+- X68030+060turbo実機 + イーサネットじょい君 + joynetd
+- X68000XVI+PhantomX実機 + イーサネットじょい君 + joynetd
+- X68000XVI実機(16MHzノーマル) + Neriori + xip
 
 ---
 
