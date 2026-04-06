@@ -47,6 +47,9 @@ wget https://github.com/tantanGH/rssnx/releases/download/v0.3.5/DSHL320E.LZH
 wget https://github.com/tantanGH/rssnx/releases/download/v0.3.5/RSSNX030.ZIP
 ```
 
+注意：環境変数SHELLを設定し、`COMMAND.X`以外のシェルを使用している場合、うまく動作しない場合があります。
+その場合はDSHELL起動前に一時的に`SET SHELL=COMMAND.X`などしてみてください。
+
 ---
 
 ## 起動方法および操作方法
